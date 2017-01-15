@@ -14,8 +14,8 @@ class UmengCrawler:
         self.driver = webdriver.PhantomJS(desired_capabilities=cap)
         # self.driver = webdriver.Chrome()
         self.host = 'mobile.umeng.com'
-        self.username = 'develop@arashivision.com'
-        self.password = ')8x3CpA$'
+        self.username = '****@arashivision.com'
+        self.password = '****'
         self.user_agent = 'Mozilla/5.0 (Windows NT 10.0; WOW64; rv:47.0) Gecko/20100101 Firefox/47.0'
         self.cookie = ''
 
