@@ -188,8 +188,148 @@ class UmengCrawler:
         jsonResult = json.dumps(result)
         return jsonResult
 
+
+    def getEvent(self, start_date, end_date, event_group_id, version):
+        self.headers['Referer'] = 'http://mobile.umeng.com/apps/cf41008f4de85e761c647675/events/' + event_group_id + '?version='
+        request = urllib2.Request(
+            'http://mobile.umeng.com/apps/cf41008f4de85e761c647675/events/load_table_data?page=1&per_page=99999&start_date=' + start_date + '&end_date=' + end_date + '&versions[]=' + version + '&channels[]=&stats=event_group_trend&event_group_id=' + event_group_id,
+            headers=self.headers
+        )
+        try:
+            response = urllib2.urlopen(request)
+            jsonData = response.read()
+            result = json.loads(jsonData, encoding="utf-8")
+            print result
+            return result['stats']
+        except urllib2.URLError, e:
+            if hasattr(e, "code"):
+                print e.code
+            if hasattr(e, "reason"):
+                print e.reason
+
+
+    def getAllEvents(self, start_date, end_date, event_group_id, version):
+        self.headers['Referer'] = 'http://mobile.umeng.com/apps/cf41008f4de85e761c647675/events/dashboard?show_all=true'
+        request = urllib2.Request(
+            'http://mobile.umeng.com/apps/cf41008f4de85e761c647675/events/load_table_data?page=1&per_page=30&versions[]=&stats=count&show_all=true',
+            headers=self.headers
+        )
+        try:
+            response = urllib2.urlopen(request)
+            jsonData = response.read()
+            result = json.loads(jsonData, encoding="utf-8")
+            print result['stats']
+            return result['stats']
+        except urllib2.URLError, e:
+            if hasattr(e, "code"):
+                print e.code
+            if hasattr(e, "reason"):
+                print e.reason
+
+
+    def getVersions(self):
+        self.headers['Referer'] = 'http://mobile.umeng.com/apps/cf41008f4de85e761c647675/events/dashboard'
+        request = urllib2.Request(
+            'http://mobile.umeng.com/apps/cf41008f4de85e761c647675/load_versions?show_all=true',
+            headers=self.headers
+        )
+        try:
+            response = urllib2.urlopen(request)
+            jsonData = response.read()
+            result = json.loads(jsonData, encoding="utf-8")
+            datas = result['datas']
+            versions = []
+            for data in datas:
+                versions.append(data['name'])
+            return versions
+
+        except urllib2.URLError, e:
+            if hasattr(e, "code"):
+                print e.code
+            if hasattr(e, "reason"):
+                print e.reason
+
+
+    def getShareChannel(self, start_date, end_date):
+        event_group_ids = {
+            '微信_img': '57afe74767e58ea4ca000428',
+            'Facebook_img': '57afe75ce0f55a34db00349c',
+            # 'Whatsapp_img': '57afe7a267e58edf73002e91',
+            # 'Facebook_video': '57afe6ce67e58eb85a0046e5',
+            # 'Pasteboard_video': '5858e1fdf5ade402780010ac',
+            # '微信_video': '57afe6bee0f55a480400445a',
+            # 'Line_img': '57afe7bce0f55ac27900447b',
+            # 'Whatsapp_video': '57afe71b67e58e317b003814',
+            # 'Moment_img': '57afe78567e58e3c1f001b74',
+            # 'Instagram_video': '5858e1f17666135f19000550',
+            # 'Pasteboard_img': '5858e214f5ade44ac9000fce',
+            # 'Youtube_video': '57afe6ed67e58e84230001c1',
+            # 'Messenger_img': '57afe7af67e58e7837001ac7',
+            # 'Line_video': '57afe73767e58e6bc80006b2',
+            # 'Instagram_img': '5858e209c895765ac5001b99',
+            # '朋友圈_video': '57afe70067e58e86c5003cfe',
+            # 'Messenger_video': '57afe728e0f55a7b52002ba4',
+            # 'QQ_img': '57afed8667e58e42aa0005da',
+            # '微博_video': '57afe70e67e58e5f2f005a1e',
+            # 'QQ_video': '57afed9f67e58eb85a004bfd',
+            # 'Twitter_img': '57afe76b67e58ef70b003503',
+            # '微博_img': '57afe794e0f55ac8e3000e81',
+            # 'Qzone_video': '57afedaa67e58e6bc8000c4d',
+            # 'Twitter_video': '57afe6dd67e58e86ad000af7',
+            # 'Qzone_img': '57afed9267e58e4759002409'
+        }
+        versions = self.getVersions()
+        result = []
+        for version in versions:
+            if version < '1.5.0':
+                continue
+            for index in event_group_ids:
+                event_group_id = event_group_ids[index]
+                data = self.getEvent(start_date, end_date, event_group_id, version)
+                temps = index.split('_')
+                temp = {
+                    'version': version,
+                    'event_group_id': event_group_id,
+                    'channel': temps[0],
+                    'type': temps[1],
+                    'data': data
+                }
+                result.append(temp)
+        jsonResult = json.dumps(result)
+        return jsonResult
+
+
+    def shareCount(self, start_date, end_date):
+        event_group_ids = {
+            'video_success': '576ba13767e58eb24f001ee5',
+            'video_try': '576ca33267e58e9c380026a4',
+            'img_try': '576ca36067e58ed3450030a8',
+            'img_success': '576ba15a67e58e15b2001435'
+        }
+        versions = self.getVersions()
+        result = []
+        for version in versions:
+            if version < '1.6.0':
+                continue
+            for index in event_group_ids:
+                event_group_id = event_group_ids[index]
+                data = self.getEvent(start_date, end_date, event_group_id, version)
+                temps = index.split('_')
+                temp = {
+                    'version': version,
+                    'event_group_id': event_group_id,
+                    'data': data,
+                    'type': temps[0],
+                    'flag': temps[1]
+                }
+                result.append(temp)
+        jsonResult = json.dumps(result)
+        return jsonResult
+
+
 if __name__=="__main__":
     crawler = UmengCrawler()
     crawler.start()
-    result = crawler.getUserDistribution('2016-07-30', '2016-08-07')
+    result = crawler.getShareChannel('2016-12-21', '2016-12-25')
+    # result = crawler.getVersions()
     print result
