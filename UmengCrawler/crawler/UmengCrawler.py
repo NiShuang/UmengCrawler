@@ -29,29 +29,59 @@ class UmengCrawler:
         self.headers['Accept-Language'] = 'zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3'
         self.headers['X-CSRF-Token'] = 'gnRA365zNecgXvbLpUca20a4uSLO40G/gFNp1sCqJZA='
     def start(self):
-        self.driver.get("https://i.umeng.com/")
+        cookie = cookielib.CookieJar()
+        handler = urllib2.HTTPCookieProcessor(cookie)
+        opener = urllib2.build_opener(handler)
 
-        element = self.driver.find_element_by_xpath("//*[@id='ump']/div[1]/div/form/div[1]/ul/li[1]/div/label/input")
-        element.clear()
-        element.send_keys(self.username)
-
-        element = self.driver.find_element_by_xpath("//*[@id='ump']/div[1]/div/form/div[1]/ul/li[2]/label/input")
-        element.clear()
-        element.send_keys(self.password)
-
-        element = self.driver.find_element_by_id("submitForm")
-        element.click()
-
-        wait = WebDriverWait(self.driver, 10)
-        element = wait.until(
-            lambda x: x.find_element_by_xpath("//*[@id='app']/div/div/main/div/div[1]/div/div/a[2]"))
-        element.click()
-
-        cookies = self.driver.get_cookies()
-        for cookie in cookies:
-            # print cookie['name'] + ' : ' + cookie['value']
-            self.cookie = self.cookie + cookie['name'] + '=' + cookie['value'] + ';'
-        self.driver.quit()
+        values = {
+            'loginId': self.username,
+            'password2': self.password,
+            'checkCode': '',
+            'appName': 'youmeng',
+            'appEntrance': 'default',
+            'bizParams': '',
+            'ua': '099#KAFEc7E9EG5E6YTLEEEEE6twSXv7V6D1DXRqD6VqZRso+fPTguBIn6VcZXC6+fYBYRXjAIdBYc37DIgFDcZj+MtTYRwYgybTET/sudyl0yaSt3xRO9uRSf8D8lCgPow3YXc0dqSLE7EjllsllVRC4/l0Py80g6R0bKEnE7EKt37Bldcdt3bi4GFEJcBNlllPbaTk8yxPrMOm8OXFVovK8PchQUiNCo49E7EFD67EEwoTETillAlldsaSurhJby1TSV3W8OXgLybTET9llC3ldRaSt3ilG/uRSf8D8lCgPowm41qTETJll/llV/Wxlt8Dr08FSP8G4RbTET9llC3ldRaSt3ilL3uRSf8D8lCgPowm4K5TEEiStEE7JGFET6i5EE1lE7EFNIaHF7oTEEySl3llsyCzE7TxT1ywEF2So87YqIWoyeHSoZdYkfMl+wDzkLp6mCXGkLKo3jk36OT26HGbvFdWVwICRJ9yk8lDqwP+M6A0pu7WoZjDB0ANtkj26HA3nkps0kVZkUoTEja5R713aquYSpXfNV9c1e95zqbVcLSpr6hZDahG3MesD/rkPwoq+yLBbtUnHda3rM2QZiXaEm1dQs90FswcazOsrfCX/IS3rfCWnjcGabWjlWwxbwXp1u86bfXGrbn3dUhYZi2CAA14GX8IrLe6csy9O/WGc7U6zVOCvRoWAMZDSM9SPCbq1WcXU6pWbLP6rdu9uOIQAMZaZOeJqsw6LOhB/oW8PSUqr6nzLsEZLY/C4295KOj6Lc8TU67Qr5TtuQrDAO4QL5WYLeJqbLXR3y9Mr02ArMVtr6XaZLX4xSWDZRh9by8ccWyIbISMHlWusflLDzry3/lvSXwk8Azlapw5zKWBNdQpztx4Ca4W37uVnROfHsh6w9rBrtCS6WSTE1LSt3llsyaSt3iSE6iP/37mt377mXZdtl9StTTmsyaZR/iSFHBP/3MrJ7FE13iSEJv5+WmkOGFET/yZTEwyL25TEEi5D7EE6GFE19iS0llR/3iurioTETilla3ldOaSl871by1TSV3W8OXgLioTETillC3ldRaSlgTZby1TSV3W8OXgLjdTEEi5DEEEJGFET6i5EE1iE7ExllllluZa5w20PpZV+Pk2PVnVIGFEHuB4lll+XKRlZykV8MixZ28mVbv0YbW7JGFET6i5EEELE7EBVXBlluKX4/l0Py80g6R0e0B8Cf81azELE7EjllllllAh4/l0Py80g6R0bKE9E7EFD67EE1qTETJlllll4L+xlt8Dr08FSP8G4E==',
+            'hsid': '1e9bc7bacdcf45193faa7c688b1ca2e4',
+            'rdsToken': '',
+            'umidToken': '9f7b57fb270885cb6aa7d1aaac45f259dba7a08a',
+            'isRequiresHasTimeout': 'false',
+            'isRDSReady': 'true',
+            'isUMIDReady': 'isUMIDReady',
+            'umidGetStatusVal': '255',
+            'lrfcf': '',
+            'lang': 'zh_cn',
+            'scene': '',
+            'isMobile': 'false',
+            'screenPixel': '1366x768',
+            'navlanguage': 'zh-CN',
+            'navUserAgent': 'Mozilla/5.0 (Windows NT 6.1; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/61.0.3163.100 Safari/537.36',
+            'navAppVersion': '',
+            'navPlatform': '',
+            'token': '',
+            'nocAppKey': '',
+            'csessionid': '',
+            'sig': '',
+            'captchaToken': '',
+            '_csrf_token': '94mc6VOhSa3QP56XjC6IK2'
+        }
+        headers = {}
+        headers['X-Requested-With'] = 'XMLHttpRequest'
+        headers['User-Agent'] = self.user_agent
+        headers['Host'] = 'passport.alibaba.com'
+        headers['Origin'] = 'https://passport.alibaba.com'
+        headers['X-Requested-With'] = 'XMLHttpRequest'
+        headers['Connection'] = 'keep-alive'
+        headers['Referer'] = 'https://passport.alibaba.com/mini_login.htm?lang=zh_cn&appName=youmeng&appEntrance=default&styleType=auto&bizParams=&notLoadSsoView=true&notKeepLogin=false&isMobile=false&cssLink=https://passport.umeng.com/css/loginIframe.css&rnd=0.10927577253646747'
+        headers['Accept'] = '*/*'
+        headers['Accept-Language'] = 'zh-CN,zh;q=0.8,en-US;q=0.5,en;q=0.3'
+        headers[
+            'Cookie'] = 't=8c2104b33f867314978f96da2f8a0ebf; _uab_collina=149579075934407755601457; l=Ao2N3XY1fYyFMIEwisLgeAJFHaMHZcE8; umdata_=70CF403AFFD707DF176342C07955D504071D3D712F4B45002F4EEB3197D2A03B38176EB3779BD52FCD43AD3E795C914C8C2179C0ABC2185A05246EC8E1B8CA84; v=0; cookie2=1e9bc7bacdcf45193faa7c688b1ca2e4; _tb_token_=e5a655781be1b; cna=9/yQEVjJDyQCAdOiUVw1VeHL; _umdata=BA335E4DD2FD504FDB20DB1838C74A33177126C1B6E55BEEC360D0D04DFD01DA81AB19C07EE20598CD43AD3E795C914CF0C3A6A1F8AEEFE87C3135A0A02F5B22; isg=At_f4Zou-n_1YP5j2EQ7wzBgbjMbkMWq9fiRWnEsSw7VAPyCexRxNtWWtqeE'
+        data = urllib.urlencode(values)
+        request = urllib2.Request(url='https://passport.alibaba.com/newlogin/login.do?fromSite=-2&appName=youmeng', data=data, headers=headers)
+        result = opener.open(request)
+        print result.read()
+        for c in cookie:
+            self.cookie += c.name + '=' + c.value + ';'
         self.headers['Cookie'] = self.cookie
 
     def getNewUser(self, start_date, end_date):
